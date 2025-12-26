@@ -6,17 +6,12 @@ app = Flask(__name__, static_url_path='', static_folder='static')
 bot = SleepBot()
 
 
-# -----------------------------
 # Serve frontend
-# -----------------------------
-@app.route("/")
 def home():
     return app.send_static_file("index.html")
 
 
-# -----------------------------
 # Chat API (SAFE)
-# -----------------------------
 @app.route("/chat", methods=["POST"])
 def chat():
     try:
@@ -50,9 +45,7 @@ def chat():
         }), 500
 
 
-# -----------------------------
 # Statistics API
-# -----------------------------
 @app.route("/stats", methods=["GET"])
 def get_stats():
     try:
@@ -66,8 +59,17 @@ def get_stats():
         return jsonify({"error": str(e)}), 500
 
 
-# -----------------------------
+# Alerts API (for polling)
+@app.route("/check-alerts", methods=["GET"])
+def check_alerts():
+    try:
+        alerts = bot.alarm.get_triggered_alerts()
+        return jsonify({"alerts": alerts})
+    except Exception as e:
+        print("❌ ALERTS ERROR:")
+        traceback.print_exc()
+        return jsonify({"alerts": []})
+
 # Run server
-# -----------------------------
 if __name__ == "__main__":
     app.run(debug=True)

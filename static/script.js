@@ -1,17 +1,11 @@
-// ============================
 // Alarm sound
-// ============================
 const alarmSound = new Audio("/sound/myinstants.mp3");
 alarmSound.loop = true;
 
-// ============================
 // Active alarm tracking
-// ============================
 let activeAlarmTimeout = null;
 
-// ============================
 // Chat toggle
-// ============================
 const chatWindow = document.getElementById("chat-window");
 const chatToggle = document.getElementById("chat-toggle");
 const chatClose = document.getElementById("chat-close");
@@ -24,9 +18,7 @@ chatClose.addEventListener("click", () => {
     chatWindow.classList.add("hidden");
 });
 
-// ============================
 // Message bubbles
-// ============================
 function addMessage(text, sender = "bot") {
     const box = document.getElementById("chat-box");
 
@@ -48,9 +40,7 @@ function addMessage(text, sender = "bot") {
     box.scrollTop = box.scrollHeight;
 }
 
-// ============================
 // Typing indicator
-// ============================
 let typingIndicator = null;
 
 function showTypingIndicator() {
@@ -71,9 +61,7 @@ function hideTypingIndicator() {
     }
 }
 
-// ============================
 // Send message
-// ============================
 function sendMessage() {
     const input = document.getElementById("user-input");
     const message = input.value.trim();
@@ -108,9 +96,7 @@ document.getElementById("user-input").addEventListener("keydown", e => {
     if (e.key === "Enter") sendMessage();
 });
 
-// ============================
 // Initial message
-// ============================
 window.addEventListener("load", () => {
     addMessage(
         "Hello! I'm SleepBot 😴\nTry:\n• I'm going to sleep\n• Wake me up at 7am\n• Wake me up in 5 minutes\n• Show my sleep consistency",
@@ -118,9 +104,7 @@ window.addEventListener("load", () => {
     );
 });
 
-// ============================
 // Alarm detection logic
-// ============================
 function detectAndScheduleAlarm(reply) {
 
     // ⛔ Cancel alarm
@@ -152,9 +136,7 @@ function detectAndScheduleAlarm(reply) {
     }
 }
 
-// ============================
 // Absolute alarm
-// ============================
 function scheduleAbsoluteAlarm(timeStr) {
     clearActiveAlarm();
 
@@ -181,9 +163,7 @@ function scheduleAbsoluteAlarm(timeStr) {
     activeAlarmTimeout = setTimeout(triggerAlarm, delay);
 }
 
-// ============================
 // Relative alarm
-// ============================
 function scheduleRelativeAlarm(minutes) {
     clearActiveAlarm();
     activeAlarmTimeout = setTimeout(
@@ -192,9 +172,7 @@ function scheduleRelativeAlarm(minutes) {
     );
 }
 
-// ============================
 // Clear alarm
-// ============================
 function clearActiveAlarm() {
     if (activeAlarmTimeout) {
         clearTimeout(activeAlarmTimeout);
@@ -203,12 +181,23 @@ function clearActiveAlarm() {
     stopAlarm();
 }
 
-// ============================
 // Alarm trigger
-// ============================
-function triggerAlarm() {
+function triggerAlarm(type = "wake", message = "") {
     alarmSound.play();
-    document.getElementById("alarm-modal").classList.remove("hidden");
+    
+    const modal = document.getElementById("alarm-modal");
+    const title = document.getElementById("alarm-title");
+    const msg = document.getElementById("alarm-message");
+    
+    if (type === "late_alert") {
+        title.textContent = "😴 GO TO SLEEP!";
+        msg.textContent = message || "It's late! Time to go to bed.";
+    } else {
+        title.textContent = "⏰ WAKE UP!";
+        msg.textContent = message || "Rise and shine!";
+    }
+    
+    modal.classList.remove("hidden");
 }
 
 function stopAlarm() {
@@ -217,17 +206,31 @@ function stopAlarm() {
     document.getElementById("alarm-modal").classList.add("hidden");
 }
 
-// ============================
+// Poll for server-side alerts
+function pollForAlerts() {
+    fetch("/check-alerts")
+        .then(res => res.json())
+        .then(data => {
+            if (data.alerts && data.alerts.length > 0) {
+                const alert = data.alerts[0]; // Handle first alert
+                triggerAlarm(alert.type, alert.message);
+            }
+        })
+        .catch(err => {
+            console.log("Alert polling error:", err);
+        });
+}
+
+// Poll every 10 seconds for server-triggered alerts
+setInterval(pollForAlerts, 10000);
+
 // Quick actions
-// ============================
 function quickSend(text) {
     document.getElementById("user-input").value = text;
     sendMessage();
 }
 
-// ============================
 // Statistics Dashboard
-// ============================
 function loadStatistics() {
     fetch("/stats")
         .then(res => res.json())
@@ -277,10 +280,10 @@ sendMessage = function() {
             hideTypingIndicator();
             addMessage(data.reply, "bot");
 
-            // 🔔 Detect alarm from bot reply
+            // Detect alarm from bot reply
             detectAndScheduleAlarm(data.reply);
             
-            // 📊 Refresh statistics after action
+            // Refresh statistics after action
             loadStatistics();
         })
         .catch(() => {

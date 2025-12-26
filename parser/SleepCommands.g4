@@ -1,9 +1,6 @@
 grammar SleepCommands;
 
-// =====================================================
 // Parser Rules
-// =====================================================
-
 command
     : sleepCmd
     | wakeCmd
@@ -19,10 +16,8 @@ command
     | helpCmd
     ;
 
-// ----------------------------
-// Sleep / Wake
-// ----------------------------
 
+// Sleep / Wake
 sleepCmd
     : (I)? (AM)? GOING TO SLEEP
     ;
@@ -31,10 +26,7 @@ wakeCmd
     : (I)? (WOKE UP | AM AWAKE)
     ;
 
-// ----------------------------
 // Alarm
-// ----------------------------
-
 setAlarmCmd
     : WAKE ME UP AT TIME
     ;
@@ -43,10 +35,7 @@ setAlarmRelativeCmd
     : WAKE ME UP IN NUMBER TIMEUNIT
     ;
 
-// ----------------------------
 // Alarm control
-// ----------------------------
-
 cancelAlarmCmd
     : (CANCEL | STOP) (MY)? ALARM
     ;
@@ -55,45 +44,30 @@ snoozeAlarmCmd
     : SNOOZE (FOR)? NUMBER TIMEUNIT
     ;
 
-// ----------------------------
 // Late alert
-// ----------------------------
-
 lateAlertCmd
     : WARN ME IF I AM AWAKE AFTER TIME
     ;
 
-// ----------------------------
 // Queries
-// ----------------------------
-
 queryCmd
     : WHAT TIMEWORD DID I SLEEP YESTERDAY
     ;
 
-// ----------------------------
 // Consistency
-// ----------------------------
-
 consistencyCmd
     : (SHOW | CHECK) MY SLEEP (CONSISTENCY | REGULARITY)
     | HOW (CONSISTENT | REGULAR) IS MY SLEEP
     ;
 
-// ----------------------------
 // Quality
-// ----------------------------
-
 qualityCmd
     : (SHOW | CHECK) MY SLEEP QUALITY
     | HOW IS MY SLEEP QUALITY
     | (RATE | ANALYZE) MY SLEEP
     ;
 
-// ----------------------------
 // Advice
-// ----------------------------
-
 adviceCmd
     : GIVE ME (SLEEP)? (ADVICE | TIPS | SUGGESTIONS)
     | (SHOW | GET) (SLEEP)? (ADVICE | TIPS | SUGGESTIONS)
@@ -101,18 +75,12 @@ adviceCmd
     | HOW TO IMPROVE MY SLEEP
     ;
 
-// ----------------------------
 // Help
-// ----------------------------
-
 helpCmd
     : HELP
     ;
 
-// =====================================================
 // Lexer Rules
-// =====================================================
-
 I           : 'i';
 AM          : 'am';
 IS          : 'is';
@@ -169,14 +137,13 @@ BETTER      : 'better';
 IMPROVE     : 'improve';
 CAN         : 'can';
 
-// ----------------------------
 // Time & Numbers
-// ----------------------------
-
 TIME
-    : DIGIT DIGIT? ':' DIGIT DIGIT ('am' | 'pm')?
-    | DIGIT DIGIT? ('am' | 'pm')
+    : DIGIT DIGIT? ':' DIGIT DIGIT (AM_PM)?
+    | DIGIT DIGIT? AM_PM
     ;
+
+fragment AM_PM : [aA][mM] | [pP][mM] ;
 
 NUMBER
     : DIGIT+
@@ -187,9 +154,5 @@ TIMEUNIT
     ;
 
 fragment DIGIT : [0-9];
-
-// ----------------------------
-// Whitespace
-// ----------------------------
 
 WS : [ \t\r\n]+ -> skip;

@@ -361,10 +361,23 @@ body {
     padding: 30px 40px;
     border-radius: 12px;
     text-align: center;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
 }
 
 .alarm-content h1 {
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
+
+.alarm-content p {
     margin-bottom: 20px;
+    font-size: 1.1rem;
+    color: #555;
 }
 
 .alarm-content button {

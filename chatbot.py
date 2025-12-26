@@ -12,13 +12,11 @@ class SleepBot:
         self.tracker = SleepTracker()
         self.alarm = AlarmManager()
 
-        # 🧠 Context memory
+        # Context memory
         self.last_intent = None
         self.last_alarm_time = None
 
-    # --------------------------------------------------------
     # Text normalization (synonyms)
-    # --------------------------------------------------------
     def normalize_text(self, text: str) -> str:
         text = text.lower().strip()
 
@@ -58,9 +56,7 @@ class SleepBot:
 
         return text
 
-    # --------------------------------------------------------
     # Context follow-up (change alarm time)
-    # --------------------------------------------------------
     def handle_context_followup(self, text: str):
         if self.last_intent == "set_alarm":
             match = re.search(r'(\d{1,2}(:\d{2})?\s?(am|pm)?)', text)
@@ -71,13 +67,11 @@ class SleepBot:
                 return f"⏰ Alarm updated to {new_time}"
         return None
 
-    # --------------------------------------------------------
     # MAIN HANDLER
-    # --------------------------------------------------------
     def handle(self, text: str) -> str:
         normalized = self.normalize_text(text)
 
-        # 1️⃣ Parse with ANTLR FIRST
+        # 1Parse with ANTLR FIRST
         input_stream = InputStream(normalized)
         lexer = SleepCommandsLexer(input_stream)
         tokens = CommonTokenStream(lexer)
@@ -90,9 +84,7 @@ class SleepBot:
 
         child = tree.getChild(0)
 
-        # ----------------------------------------------------
-        # 🚨 Terminal alarm commands (bypass context follow-up)
-        # ----------------------------------------------------
+        # Terminal alarm commands (bypass context follow-up)
         if isinstance(child, SleepCommandsParser.CancelAlarmCmdContext):
             self.alarm.cancel_all()
             self.last_intent = None
@@ -109,24 +101,18 @@ class SleepBot:
 
             return f"😴 Snoozing for {minutes} minutes."
 
-        # ----------------------------------------------------
-        # 2️⃣ Context follow-up (ONLY for alarm updates)
-        # ----------------------------------------------------
+        # Context follow-up (ONLY for alarm updates)
         followup = self.handle_context_followup(normalized)
         if followup:
             return followup
 
-        # --------------------
         # Sleep
-        # --------------------
         if isinstance(child, SleepCommandsParser.SleepCmdContext):
             self.tracker.log_sleep()
             self.last_intent = "sleep"
             return "😴 Got it — sleep time logged. Good night!"
 
-        # --------------------
         # Wake
-        # --------------------
         if isinstance(child, SleepCommandsParser.WakeCmdContext):
             success, error = self.tracker.log_wake()
             self.last_intent = "wake"
@@ -144,9 +130,7 @@ class SleepBot:
 
             return "🌤️ Good morning! I’ve logged your wake-up time."
 
-        # --------------------
         # Absolute alarm
-        # --------------------
         if isinstance(child, SleepCommandsParser.SetAlarmCmdContext):
             t = child.TIME().getText()
             self.alarm.set_morning_alarm(t)
@@ -155,9 +139,7 @@ class SleepBot:
             self.last_alarm_time = t
             return f"⏰ All set! I’ll wake you up at {t}."
 
-        # --------------------
         # Relative alarm
-        # --------------------
         if isinstance(child, SleepCommandsParser.SetAlarmRelativeCmdContext):
             amount = int(child.NUMBER().getText())
             unit = child.TIMEUNIT().getText()
@@ -168,9 +150,7 @@ class SleepBot:
             self.last_intent = "set_alarm"
             return f"⏰ Done! I’ll wake you up in {minutes} minutes."
 
-        # --------------------
         # Late alert
-        # --------------------
         if isinstance(child, SleepCommandsParser.LateAlertCmdContext):
             t = child.TIME().getText()
             self.alarm.set_late_alert(t)
@@ -178,18 +158,14 @@ class SleepBot:
             self.last_intent = "late_alert"
             return f"⚠️ Okay! I’ll remind you if you’re still awake after {t}."
 
-        # --------------------
         # Query
-        # --------------------
         if isinstance(child, SleepCommandsParser.QueryCmdContext):
             t = self.tracker.get_yesterday_sleep_time()
             if not t:
                 return "😕 I don’t have any sleep data yet. Try logging your sleep tonight!"
             return f"🕒 You went to sleep at {t}."
 
-        # --------------------
         # Sleep consistency
-        # --------------------
         if isinstance(child, SleepCommandsParser.ConsistencyCmdContext):
             stats = self.tracker.get_sleep_consistency()
             if not stats:
@@ -217,9 +193,7 @@ class SleepBot:
                 "Tip: Try sleeping and waking within the same 30–60 minute window."
             )
 
-        # --------------------
         # Sleep Quality
-        # --------------------
         if isinstance(child, SleepCommandsParser.QualityCmdContext):
             quality = self.tracker.get_sleep_quality()
             if not quality:
@@ -254,9 +228,7 @@ class SleepBot:
             response += "\nType 'give me advice' for personalized tips!"
             return response
 
-        # --------------------
         # Sleep Advice
-        # --------------------
         if isinstance(child, SleepCommandsParser.AdviceCmdContext):
             advice_data = self.tracker.get_sleep_advice()
             if not advice_data:
@@ -279,9 +251,7 @@ class SleepBot:
             
             return response.strip()
 
-        # --------------------
         # Help
-        # --------------------
         if isinstance(child, SleepCommandsParser.HelpCmdContext):
             return (
                 "Here are some things you can try 😊\n\n"

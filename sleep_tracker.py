@@ -2,7 +2,6 @@ import json
 import os
 from datetime import datetime
 
-
 class SleepTracker:
     FILE = os.path.join("data", "sleep_log.json")
 
@@ -15,9 +14,7 @@ class SleepTracker:
         except (FileNotFoundError, json.JSONDecodeError):
             self.data = []
 
-    # --------------------
     # Persistence
-    # --------------------
     def save(self):
         with open(self.FILE, "w", encoding="utf-8") as f:
             json.dump(self.data, f, indent=4)
@@ -25,9 +22,7 @@ class SleepTracker:
     def timestamp(self):
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # --------------------
     # Logging
-    # --------------------
     def log_sleep(self):
         # Prevent double sleep
         if self.data and self.data[-1]["wake"] is None:
@@ -51,9 +46,7 @@ class SleepTracker:
         self.save()
         return True, None
 
-    # --------------------
     # Queries
-    # --------------------
     def get_yesterday_sleep_time(self):
         if not self.data:
             return None
@@ -80,9 +73,7 @@ class SleepTracker:
         minutes = total_minutes % 60
         return hours, minutes
 
-    # --------------------
     # Consistency Analysis
-    # --------------------
     def get_sleep_consistency(self):
         completed = [
             entry for entry in self.data
@@ -142,9 +133,7 @@ class SleepTracker:
             "sessions_analyzed": len(recent)
         }
 
-    # --------------------
     # Statistics for UI
-    # --------------------
     def get_statistics(self):
         """Get sleep statistics for the dashboard."""
         completed = [
@@ -193,9 +182,7 @@ class SleepTracker:
             "last_wake_time": last_wake.strftime("%I:%M %p")
         }
 
-    # --------------------
     # Sleep Quality Analysis
-    # --------------------
     def get_sleep_quality(self):
         """Analyze sleep quality based on duration, consistency, and patterns."""
         completed = [
@@ -308,9 +295,7 @@ class SleepTracker:
             "positives": positives
         }
 
-    # --------------------
     # Sleep Advice
-    # --------------------
     def get_sleep_advice(self):
         """Generate personalized sleep advice based on quality and consistency."""
         quality = self.get_sleep_quality()
