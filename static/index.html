@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SleepBot Chat</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="chatbot-icon.png">
+</head>
+
+<body>
+
+    <!-- Background content -->
+    <div class="landing-page">
+        <div class="stars"></div>
+        <div class="content">
+            <h1>🌙 SleepBot</h1>
+            <p>Your personal sleep tracking assistant</p>
+            
+            <!-- Statistics Dashboard -->
+            <div class="stats-dashboard" id="stats-dashboard">
+                <div class="stat-card">
+                    <div class="stat-icon">😴</div>
+                    <div class="stat-value" id="stat-sessions">-</div>
+                    <div class="stat-label">Total Sessions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-value" id="stat-avg">-</div>
+                    <div class="stat-label">Avg Duration</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-value" id="stat-best">-</div>
+                    <div class="stat-label">Best Sleep</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🌙</div>
+                    <div class="stat-value" id="stat-last">-</div>
+                    <div class="stat-label">Last Duration</div>
+                </div>
+            </div>
+            
+            <div class="last-activity" id="last-activity">
+                <p>💤 Last sleep: <span id="last-sleep-time">--</span> → 🌅 Wake: <span id="last-wake-time">--</span></p>
+            </div>
+            
+            <p class="subtitle">Click the chat button to get started →</p>
+        </div>
+    </div>
+
+    <!-- Floating avatar toggle -->
+    <div id="chat-toggle" class="chat-toggle">
+        <img src="chatbot-icon.png" alt="SleepBot Avatar">
+    </div>
+
+    <!-- Chat window -->
+    <div id="chat-window" class="chat-window hidden">
+
+        <!-- Header -->
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <div class="chat-title">SleepBot 😴</div>
+                <div class="chat-status">Online · Sleep assistant</div>
+            </div>
+            <div id="chat-close" class="chat-close">✖</div>
+        </div>
+
+        <!-- Chat messages -->
+        <div id="chat-box" class="chat-box"></div>
+
+        <!-- Input area -->
+        <div class="chat-input-area">
+            <input id="user-input" type="text" placeholder="Type a message" autocomplete="off">
+            <button id="send-btn">➤</button>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="quick-actions">
+            <button onclick="quickSend('I am going to sleep')">😴 Sleep</button>
+            <button onclick="quickSend('I am awake')">🌤️ Wake</button>
+            <button onclick="quickSend('Check my sleep quality')">⭐ Quality</button>
+            <button onclick="quickSend('Give me advice')">💡 Advice</button>
+        </div>
+
+    </div>
+
+    <!-- Alarm Modal -->
+    <div id="alarm-modal" class="alarm-modal hidden">
+        <div class="alarm-content">
+            <h1>⏰ WAKE UP!</h1>
+            <button onclick="stopAlarm()">Stop Alarm</button>
+        </div>
+    </div>
+
+
+    <script src="script.js"></script>
+</body>
+
+</html>
